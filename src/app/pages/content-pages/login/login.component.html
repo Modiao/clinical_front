@@ -1,0 +1,67 @@
+<div class="hold-transition login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <span><b>CLINIC</b> OF PEACE</span>
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+      <div class="card-body login-card-body">
+        <p class="login-box-msg">Connectez-vous pour démarrer votre session</p>
+
+        <form action="../../index3.html" method="post">
+          <div class="input-group mb-3">
+            <input type="text" name="email" [(ngModel)]="username" (keyup)="setConnexionStatus($event)" (keyup.enter)="onSubmit()" class="form-control" placeholder="Email">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" name="password" [(ngModel)]="password" (keyup)="setConnexionStatus($event)" (keyup.enter)="onSubmit()" class="form-control" placeholder="Password">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="remember">
+                <label for="remember">
+                  Remember me
+                </label>
+              </div>
+            </div> -->
+            <!-- /.col -->
+            <div class="col">
+              <button type="submit" (click)="onSubmit()" class="btn btn-primary btn-block">Se connecter</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+
+        <!-- <div class="social-auth-links text-center mb-3">
+          <p>- OR -</p>
+          <a href="#" class="btn btn-block btn-primary">
+            <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+          </a>
+          <a href="#" class="btn btn-block btn-danger">
+            <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+          </a>
+        </div> -->
+        <!-- /.social-auth-links -->
+
+        <p class="mb-1">
+          <a href="#">J'ai oublié mon mot de passe</a>
+        </p>
+        <p class="mb-0">
+          <a href="#" class="text-center">Enrégistrer une nouvelle adhésion</a>
+        </p>
+      </div>
+      <!-- /.login-card-body -->
+    </div>
+  </div>
+  <!-- /.login-box -->
+  </div>

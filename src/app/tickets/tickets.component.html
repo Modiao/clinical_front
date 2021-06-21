@@ -1,0 +1,198 @@
+<style>
+  .blueBg {
+    background-color: blue;
+  }
+  .redBg {
+    background-color: brown;
+  }
+</style>
+<ng-template #detailTicket let-c="close" let-d="dismiss">
+  <div class="modal-header" style="color:white; background-color:#343a40;">
+    <h6  style="font-weight:500;width: 100%;text-align: center;">Ticket {{ currentTicket.id_ticket }}</h6>
+    <button type="button" class="close" (click)="c('Cross click')" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div id="detailTicketPDF">
+      <fieldset class="scheduler-border px-4">
+        <legend class="scheduler-border row justify-content-between">
+          <div class="mt-4">Details</div>
+          <div>
+            <img src="assets/img/clinic-logo.jpeg" style="width: 80px; height: auto;">
+          </div>
+        </legend>
+        <table class="table-borderless" style="color:#514b4b; font-size:17px;line-height:1.6;">
+          <tr>
+            <td>ID Ticket</td>
+            <td> : &nbsp;</td>
+            <td> {{ currentTicket.id_ticket }}</td>
+          </tr>
+          <tr>
+            <td>Patient</td>
+            <td> : &nbsp;</td>
+            <td> {{ currentTicket.patient }}</td>
+          </tr>
+          <tr>
+            <td>Type de ticket</td>
+            <td> : &nbsp;</td>
+            <td> {{ getTypeOfTicket(currentTicket.type) }}</td>
+          </tr>
+          <tr>
+            <td>Montant</td>
+            <td> : &nbsp;</td>
+            <td> {{ currentTicket.montant }}</td>
+          </tr>
+          <tr>
+            <td>Créé le</td>
+            <td> : &nbsp;</td>
+            <td> {{ getFormatedDate(currentTicket.create_at) }}</td>
+          </tr>
+        </table>
+      </fieldset>
+    </div>
+  </div>
+  <div class="modal-footer" style="display: flex; justify-content: space-between;">
+    <button type="button" class="btn btn-light" style="color: #484052;" (click)="exportToPDF(currentTicket)">Exporter en PDF</button>
+    <button type="button" class="btn btn-light" style="color: #343a40;"  data-dismiss="modal" (click)="c('Close click')">FERMER</button>
+  </div>
+</ng-template>
+<ng-template #newTicketModal let-c="close" let-d="dismiss">
+  <div class="modal-header" style="color:white; background-color:#343a40;">
+    <h6  style="font-weight:500;width: 100%;text-align: center;">Nouveau Ticket</h6>
+    <button type="button" class="close" (click)="c('Cross click')" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Nom du patient<span style="color: red;">*</span></span>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Nom du patient"
+        aria-label="nom"
+        [(ngModel)]="new_ticket.nom_patient"
+      />
+    </div>
+    <br />
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Prénom du patient<span style="color: red;">*</span></span>
+      </div>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Nom du patient"
+        aria-label="nom"
+        [(ngModel)]="new_ticket.penom_patient"
+      />
+    </div>
+    <br />
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">
+          Type
+        </span>
+      </div>
+      <select class="form-control" [(ngModel)]="new_ticket.type">
+        <option value="">Choisir une option</option>
+        <option *ngFor="let type of typesOfTickets" [value]="type.value">{{ type.text }}</option>
+     </select>
+    </div>
+    <br />
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">
+          Status du ticket
+        </span>
+      </div>
+      <input
+        type="checkbox"
+        class="form-control"
+        [(ngModel)]="new_ticket.is_valid"
+        style="margin-right: 10rem;">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" (click)="addTicket(new_ticket); c('Cross click')" class="btn btn-success btn-raised">
+      Ajouter
+    </button>
+  </div>
+</ng-template>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col row">
+          <h1 class="m-0 mx-1">Tickets</h1>
+          <div class="col text-right">
+            <button class="btn btn-primary" (click)="openAdd(newTicketModal)" data-toggle="modal" data-target="#newTicketModal">nouveau ticket</button>
+          </div>
+        </div>
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-content">
+          <div class="card-body">
+            <input type="text" class="form-control" placeholder="filtrer" [(ngModel)]="searchTicket"><br>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Patient</th>
+                  <th>Montant Ticket</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Détails</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngIf="tickets.length < 1">
+                  <td style="text-align: center;" colspan="8">AUCUN TICKET POUR LE MOMENT</td>
+                </tr>
+                <tr *ngFor="let ticket of slicedTickets">
+                  <td>{{ ticket.id_ticket }}</td>
+                  <td>{{ ticket.patient }}</td>
+                  <td>{{ ticket.montant }}</td>
+                  <td>{{ getTypeOfTicket(ticket.type) }}</td>
+                  <td>
+                    <span *ngIf="ticket.is_valid" style="color:white !important" class="btn-sm blueBg">{{ getStatus(ticket.is_valid) }}</span>
+                    <span *ngIf="!ticket.is_valid" style="color:white !important" class="btn-sm redBg">{{ getStatus(ticket.is_valid) }}</span>
+                  </td>
+                  <td>{{ getFormatedDate(ticket.create_at) }}</td>
+                  <td>
+                    <span style="cursor:pointer;color:white; background-color:#423c6c;width: 100%;border-radius: 20px;" class="btn" (click)="open(detailTicket, ticket)" data-toggle="modal" data-target="#detailTicket" title="cliquez pour plus de détails">Détail</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<style>
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .hideScrollbar::-webkit-scrollbar{
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hideScrollbar {
+    scrollbar-width: none;
+  }
+</style>
